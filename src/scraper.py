@@ -72,7 +72,6 @@ def scrape_trending_web(nitter_instance: str) -> list[dict]:
     """
     Fallback: scrape trending topics from Nitter web page.
     """
-    # Try to get the home page which shows trending
     url = nitter_instance.rstrip("/")
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
@@ -83,13 +82,9 @@ def scrape_trending_web(nitter_instance: str) -> list[dict]:
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, "lxml")
             trends = []
-
-            # Nitter shows trending in the sidebar or dedicated section
-            # Look for links with trend indicators
             for a in soup.find_all("a", href=True)[:15]:
                 text = a.get_text(strip=True)
                 href = a["href"]
-                # Filter for actual trends (usually #hashtags or named topics)
                 if text and (text.startswith("#") or "search" in href):
                     trends.append({
                         "name": text,
@@ -98,8 +93,9 @@ def scrape_trending_web(nitter_instance: str) -> list[dict]:
                     })
                     if len(trends) >= 10:
                         break
-
             return trends
+        else:
+            print(f"❌ Nitter web scrape failed: HTTP {resp.status_code}")
     except Exception as e:
         print(f"❌ Web scraping fallback failed: {e}")
 
