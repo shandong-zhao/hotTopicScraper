@@ -8,4 +8,5 @@ PROJECT_DIR="/opt/hotTopicScraper"
 cd "$PROJECT_DIR" || exit 1
 
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Running scraper..." >> "$LOGFILE"
+source "$PROJECT_DIR/venv/bin/activate"
 python3 src/main.py >> "$LOGFILE" 2>&1
