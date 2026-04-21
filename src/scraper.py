@@ -3,6 +3,8 @@ X (Twitter) trending topics scraper using Nitter instances.
 """
 
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import os
@@ -10,10 +12,12 @@ import random
 
 
 NITTER_INSTANCES = [
-    "https://nitter.privacydev.net",
     "https://nitter.poast.org",
     "https://nitter.kavin.rocks",
     "https://nitter.universeodon.com",
+    "https://nitter.net",
+    "https://nitter.lacontrevoie.fr",
+    "https://nitter.fdn.fr",
 ]
 
 
@@ -45,7 +49,7 @@ def fetch_trending(nitter_instance: str = None) -> list[dict]:
 
     trends = []
     try:
-        resp = requests.get(url, headers=headers, timeout=10)
+        resp = requests.get(url, headers=headers, timeout=10, verify=False)
         if resp.status_code == 200:
             data = resp.json()
             # API returns a list of trend objects
@@ -78,7 +82,7 @@ def scrape_trending_web(nitter_instance: str) -> list[dict]:
     }
 
     try:
-        resp = requests.get(url, headers=headers, timeout=10)
+        resp = requests.get(url, headers=headers, timeout=10, verify=False)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.text, "lxml")
             trends = []
